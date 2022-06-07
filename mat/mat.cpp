@@ -1,86 +1,51 @@
 #pragma once
 #include "../Hello/Hello.hpp"
+#include "vec.hpp"
 #include <DirectXMath.h>
-
-template <UINT size>
-float det(float *matRows[size])
-{
-  float res{};
-  for (int col{}; col < size; col++)
-  {
-    {
-      float prod{1};
-      for (int i{}, j{col}; i < size; i++, j++, j %= size)
-      {
-        float w{matRows[i][j]};
-        prod *= w;
-        // ::Log<Console>::Write( i, j,' ',w);
-        //::Log<Console>::Write(prod);
-      }
-      //  ::Log<Console>::Write(' ');
-      res += prod;
-    }
-    {
-      float prod{1};
-      for (int i{size - 1}, j{(col + 1) % size}; i >= 0; i--, j++, j %= size)
-      {
-        float w{matRows[i][j]};
-        prod *= w;
-      //  ::Log<Console>::Write(i, j, ' ', w);
-      }
-      res -= prod;
-    }
-    //::Log<Console>::Write(' ');
-  };
-
-  return res;
-};
-
 using namespace DirectX;
 
-int main( )
+struct Vec
+{
+  Vec(float x, float y, float z, float w) : d{x, y, z, w} {};
+  Vec(_In_reads_(4) const float *pArray) noexcept;
+  float d[4]{};
+  float operator[](UINT index) const { return d[index]; };
+};
+
+float operator*(const Vec &left, const Vec &right)
+{
+  return {left[0] * right[0] + left[1] * right[1] + left[2] * right[2] + left[3] * right[3]};
+};
+
+Vec mul(Vec vec, Vec mat[4])
+{
+  return {vec * mat[0],
+          vec * mat[1],
+          vec * mat[2],
+          vec * mat[3]};
+};
+
+int main()
 {
   //::Log<Console>::Write("hello");
-  float mat[10][10]{
-      {/**/ 4, 1, 1, 1, /**/ 45, 3, 2, 67},
-      {/**/ 6, 2, 4, 4, /**/ 45, 3, 2, 67},
-      {/**/ 7, 5, 2, 1, /**/ 1, 3, 2, 78},
-      {/**/ 1, 2, 1, 1, /**/ 235, 3, 2, 67},
-      /////////////////
-      {4, 1, 14, 367, 45, 3, 2, 78},
-      {4, 34, 14, 367, 45, 538, 2, 67},
-      {4, 11, 14, 367, 45, 39, 2, 78},
-      {4, 1, 14, 367, 45, 23, 82, 37},
-      {4, 1, 14, 367, 4825, 3, 278, 31},
-      {4, 1, 14, 367, 45, 3, 2, 67}};
+  Vec vec{1.04f, .03325f, .654f, .235f};
 
-  //(  (16-64) +(4-6)+(56-14)+(6-4));
-  float *rows[10]{
-      mat[0],
-      mat[1],
-      mat[2],
-      mat[3],
-      mat[4],
-      mat[5],
-      mat[6],
-      mat[7],
-      mat[8],
-      mat[9]};
+  Vec mat[4]{
+      {.84f, .2f, .714f, .643f},
+      {.25f, .35f, .74f, .241f},
+      {.42f, .2f, .42f, .2f},
+      {.12f, .54f, .53f, .42f}};
+  auto res{mul(vec, mat)};
 
-  ::Log<Console>::Write(det<4>(rows));
+  ::Log<Console>::Write(res[0], res[1], res[2], res[3]);
 
-   XMMATRIX m{
-       XMLoadFloat4((XMFLOAT4*) mat[0]),
-       XMLoadFloat4((XMFLOAT4*) mat[1]),
-       XMLoadFloat4((XMFLOAT4*) mat[2]),
-       XMLoadFloat4((XMFLOAT4*) mat[3]),
-   };
-    
+  XMVECTOR XMvec{XMLoadFloat4((XMFLOAT4 *)&vec)};
+  XMMATRIX XMmat{(float *)mat};
+  auto XMres{XMVector4Transform(XMvec, XMmat)};
+  ::Log<Console>::Write(XMres.m128_f32[0], XMres.m128_f32[1], XMres.m128_f32[2], XMres.m128_f32[3]);
 
-   XMVECTOR v{XMMatrixDeterminant(XMMatrixTranspose(m))};
-  ::Log<Console>::Write(v.m128_f32[0]);
+  auto XMresT{XMVector4Transform(XMvec, XMMatrixTranspose(XMmat))};
+  ::Log<Console>::Write(XMresT.m128_f32[0], XMresT.m128_f32[1], XMresT.m128_f32[2], XMresT.m128_f32[3]);
 
   return 0;
 };
-
- 
