@@ -39,18 +39,19 @@ int main(int argv, char *args[])
          col != right.size() + 1;
          ++col)
     {
-        char m{right[col-1]};
+        char m{right[col - 1]};
 
         for (size_t row{1}; // skip "" cast row
              row != left.size() + 1;
              ++row)
         {
-            char n{left[row-1]};
+            char n{left[row - 1]};
+            mat[col][row] = std::max(mat[col - 1][row], mat[col][row - 1]);
             if (n == m)
             {
-                cout << '[' << n << m << ']'<<'\n';
-                mat[col][row] = 1 + std::max(mat[col - 1][row], mat[col][row - 1]);
-            };
+                mat[col][row] += 1;
+                // cout << '[' << n << m << ']'<<'\n';
+            }
         };
     };
     for (auto &vec : mat)
