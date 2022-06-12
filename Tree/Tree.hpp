@@ -9,7 +9,7 @@ class Node final
 
 public:
     Node() = default;
-    Node(Data_t data)
+    Node(Data_t &data)
         : m_data{data},
           m_left{nullptr},
           m_right{nullptr} {};
