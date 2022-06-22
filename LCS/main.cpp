@@ -75,43 +75,74 @@ int main(int argv, char *args[])
         cout << "lol";
     };
 
-    const string_view left{args[1]};  // n
-    const string_view right{args[2]}; // m
+    const string_view oldVersion{args[1]};  // n , row
+    const string_view newVersion{args[2]}; // m , col
 
-    string common{""};
-    cout << "'" << left << "', '" << right << "'\n";
+    cout << "'" << oldVersion << "', '" << newVersion << "'\n";
 
-    auto mat{LCS(left, right)};
-    for (auto &vec : mat)
-        cout << vec;
-
+    auto mat{LCS(oldVersion, newVersion)};
     auto LSC{mat.back().back()};
-    cout << "LSC: " << LSC << '\n';
 
-    // ulong to int conv
+#define DEBUG_INFO
+#ifdef DEBUG_INFO
+
+        cout<<"       "<<"0"<< std::setw(COUT_WIDTH);
+    for (auto &each: oldVersion)
+        cout<< std::setw(COUT_WIDTH) << each << std::setw(COUT_WIDTH);
+    cout<< '\n';
+
+    {
+
+        int i{0};
+        auto begin{mat.begin()+1};
+        auto end{mat.end()};
+
+        cout <<std::setw(COUT_WIDTH)<<'0'<< std::setw(COUT_WIDTH) << *mat.begin();
+
+        for (;begin!=end;++begin)
+        {
+            cout <<std::setw(COUT_WIDTH)<<newVersion[i++]<< std::setw(COUT_WIDTH) << *begin;
+        };
+
+    }
+
+
+    cout << "LSC: " << LSC << '\n';
+#endif
+   
     auto col{mat.size() - 1};
     auto row{mat.back().size() - 1};
-    string str(LSC, ' ');
-    auto i{LSC - 1};
+    string common(LSC, '\0');
+    string removed(oldVersion.length()- LSC, '\0');
+    string added(newVersion.length()- LSC, '\0');
 
-    //      string leftDiff(left.length()-LSC, ' ');
-    //      auto leftI{leftDiff.length() - 1};
+   
+    while ( col!=0|| row !=0)
+{
 
-    while (row > 0)
-    {
-        if (mat[col][row] != mat[col][row - 1])
+        
+        if(row >0 &&(mat[col][row] == mat[col][row - 1]))
+         {
+            removed+= oldVersion[row - 1];
+            --row;
+         }
+         else if(mat[col][row] == mat[col- 1][row ])
         {
-            while (mat[col][row] == mat[col - 1][row])
-            {
-                --col;
-                cout << right[col - 1];
-            }
-            str[i] = left[row - 1];
-            --i;
+             added+= newVersion[col -1];
+            --col;
         }
-        --row;
-    };
-
-    //    cout << str;
+         else
+         {
+            common+= oldVersion[row - 1];
+            --row;
+            --col;
+         }
+ }
+    std::reverse( common.begin(),common.end());
+    std::reverse( removed.begin(),removed.end());
+    std::reverse( added.begin(),added.end());
+    cout <<"==: "<<common <<'\n';
+    cout <<"--: "<<removed <<'\n';
+    cout <<"++: "<<added <<'\n';
     // cout << "common " << common.c_str();
 };
