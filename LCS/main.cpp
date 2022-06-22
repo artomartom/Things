@@ -16,7 +16,7 @@ using RowIt = std::vector<T>::iterator;
 using Vec = std::vector<T>;
 using Mat = std::vector<Vec>;
 
-#define COUT_WIDTH 4
+#define COUT_WIDTH 6
 template <typename T>
 std::ostream &operator<<(std::ostream &os, const std::vector<T> &vec)
 {
@@ -75,7 +75,7 @@ int main(int argv, char *args[])
         cout << "lol";
     };
 
-    const string_view oldVersion{args[1]};  // n , row
+    const string_view oldVersion{args[1]}; // n , row
     const string_view newVersion{args[2]}; // m , col
 
     cout << "'" << oldVersion << "', '" << newVersion << "'\n";
@@ -86,63 +86,63 @@ int main(int argv, char *args[])
 #define DEBUG_INFO
 #ifdef DEBUG_INFO
 
-        cout<<"       "<<"0"<< std::setw(COUT_WIDTH);
-    for (auto &each: oldVersion)
-        cout<< std::setw(COUT_WIDTH) << each << std::setw(COUT_WIDTH);
-    cout<< '\n';
+    cout
+        << std::setw(COUT_WIDTH )
+        << ' '
+        << std::setw(COUT_WIDTH)
+        << ' ' << std::setw(COUT_WIDTH);
+    for (auto &each : oldVersion)
+        cout << std::setw(COUT_WIDTH) << each << std::setw(COUT_WIDTH);
+    cout << '\n';
 
     {
 
         int i{0};
-        auto begin{mat.begin()+1};
+        auto begin{mat.begin() + 1};
         auto end{mat.end()};
 
-        cout <<std::setw(COUT_WIDTH)<<'0'<< std::setw(COUT_WIDTH) << *mat.begin();
+        cout << std::setw(COUT_WIDTH) << ' ' << std::setw(COUT_WIDTH) << *mat.begin();
 
-        for (;begin!=end;++begin)
+        for (; begin != end; ++begin)
         {
-            cout <<std::setw(COUT_WIDTH)<<newVersion[i++]<< std::setw(COUT_WIDTH) << *begin;
+            cout << std::setw(COUT_WIDTH) << newVersion[i++] << std::setw(COUT_WIDTH) << *begin;
         };
-
     }
-
 
     cout << "LSC: " << LSC << '\n';
 #endif
-   
+
     auto col{mat.size() - 1};
     auto row{mat.back().size() - 1};
     string common(LSC, '\0');
-    string removed(oldVersion.length()- LSC, '\0');
-    string added(newVersion.length()- LSC, '\0');
+    string removed(oldVersion.length() - LSC, '\0');
+    string added(newVersion.length() - LSC, '\0');
 
-   
-    while ( col!=0|| row !=0)
-{
+    while (col != 0 || row != 0)
+    {
 
-        
-        if(row >0 &&(mat[col][row] == mat[col][row - 1]))
-         {
-            removed+= oldVersion[row - 1];
-            --row;
-         }
-         else if(mat[col][row] == mat[col- 1][row ])
+        if (row > 0 && (mat[col][row] == mat[col][row - 1]))
         {
-             added+= newVersion[col -1];
+            removed += oldVersion[row - 1];
+            --row;
+        }
+        else if (mat[col][row] == mat[col - 1][row])
+        {
+            added += newVersion[col - 1];
             --col;
         }
-         else
-         {
-            common+= oldVersion[row - 1];
+        else
+        {
+            common += oldVersion[row - 1];
             --row;
             --col;
-         }
- }
-    std::reverse( common.begin(),common.end());
-    std::reverse( removed.begin(),removed.end());
-    std::reverse( added.begin(),added.end());
-    cout <<"==: "<<common <<'\n';
-    cout <<"--: "<<removed <<'\n';
-    cout <<"++: "<<added <<'\n';
+        }
+    }
+    std::reverse(common.begin(), common.end());
+    std::reverse(removed.begin(), removed.end());
+    std::reverse(added.begin(), added.end());
+    cout << "==: " << common << '\n';
+    cout << "--: " << removed << '\n';
+    cout << "++: " << added << '\n';
     // cout << "common " << common.c_str();
 };
