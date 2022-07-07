@@ -4,8 +4,8 @@
 
 int main()
 {
-    std::cout<<"Hello";
-
+    std::cout<<"hello world\n";
+    std::cerr<<"hello error\n";
      
   return 0;
 };
